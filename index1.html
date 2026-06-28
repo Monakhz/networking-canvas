@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundraising Networking Canvas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #1B4F72;
+    --teal-light: #2E86C1;
+    --teal-pale: #D6EAF8;
+    --amber: #D4AC0D;
+    --amber-light: #F9E79F;
+    --amber-pale: #FEFBD8;
+    --green: #1E8449;
+    --green-pale: #D5F5E3;
+    --coral: #C0392B;
+    --coral-pale: #FADBD8;
+    --grey-bg: #F7F8FA;
+    --grey-border: #E2E8EF;
+    --grey-mid: #8A9BB0;
+    --text: #1A2332;
+    --text-light: #4A5568;
+    --white: #FFFFFF;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(27,79,114,0.10);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--grey-bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom:40px;max-width:100vw;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--teal);
+    color: white;
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(27,79,114,0.25);
+  }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .header h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.3; }
+  .header p { font-size: 12px; opacity: 0.8; margin-top: 4px; font-weight: 400; }
+  .save-btn {
+    background: var(--amber);
+    color: var(--teal);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .save-btn:hover { opacity: 0.88; }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    margin-top: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .progress-label { font-size: 11px; opacity: 0.75; margin-top: 6px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--grey-border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 108px;
+    z-index: 90;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 80px;
+    padding: 12px 8px 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--grey-mid);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Inter', sans-serif;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+  .tab-icon { font-size: 16px; }
+  .tab-check { font-size: 10px; color: var(--green); display: none; }
+  .tab.done .tab-check { display: block; }
+
+  /* SECTIONS */
+  .section { display: none; padding: 20px 16px; max-width: 680px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  .section-header {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 18px 14px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--teal);
+  }
+  .section-header h2 { font-size: 16px; font-weight: 800; color: var(--teal); }
+  .section-header p { font-size: 13px; color: var(--text-light); margin-top: 5px; line-height: 1.5; }
+  .section-header .research-note {
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 600;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* CARDS */
+  .card { scroll-margin-top:80px;
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--grey-border);
+    transition: border-color 0.2s;
+  }
+  .card.answered { border-color: var(--teal-light); }
+  .card-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .card-label .num {
+    background: var(--teal);
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .card-sublabel {
+    font-size: 11px;
+    color: var(--grey-mid);
+    margin-bottom: 12px;
+    margin-left: 30px;
+    font-style: italic;
+  }
+
+  /* SLIDER */
+  .slider-wrap { padding: 0 4px; }
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--grey-border);
+    outline: none;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(27,79,114,0.3);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(27,79,114,0.3);
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--grey-mid);
+  }
+  .slider-value {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  /* YES/NO */
+  .yesno-wrap { display: flex; gap: 10px; }
+  .yesno-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--grey-border);
+    border-radius: 10px;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-light);
+  }
+  .yesno-btn.selected-yes { background: var(--green-pale); border-color: var(--green); color: var(--green); }
+  .yesno-btn.selected-no { background: var(--coral-pale); border-color: var(--coral); color: var(--coral); }
+
+  /* MULTI-SELECT CHIPS */
+  .chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 8px 14px;
+    border: 2px solid var(--grey-border);
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    color: var(--text-light);
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .chip.selected { background: var(--teal-pale); border-color: var(--teal); color: var(--teal); }
+
+  /* TEXT INPUT */
+  .text-input {
+    width: 100%;
+    border: 2px solid var(--grey-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--grey-bg);
+  }
+  .text-input:focus { border-color: var(--teal); background: white; }
+
+  /* ALERT BOX */
+  .alert {
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+    display: none;
+    font-weight: 500;
+  }
+  .alert.show { display: block; }
+  .alert-amber { background: var(--amber-pale); border-left: 3px solid var(--amber); color: #7D6608; }
+  .alert-green { background: var(--green-pale); border-left: 3px solid var(--green); color: #1A5E38; }
+  .alert-coral { background: var(--coral-pale); border-left: 3px solid var(--coral); color: #922B21; }
+
+  /* NETWORK TABLE */
+  .network-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .network-table th {
+    background: var(--teal);
+    color: white;
+    padding: 10px 10px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .network-table th:first-child { border-radius: 8px 0 0 0; }
+  .network-table th:last-child { border-radius: 0 8px 0 0; }
+  .network-table td { padding: 8px 10px; border-bottom: 1px solid var(--grey-border); vertical-align: top; }
+  .network-table tr:nth-child(even) td { background: var(--grey-bg); }
+  .network-table input, .network-table select {
+    width: 100%;
+    border: 1px solid var(--grey-border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    background: white;
+    color: var(--text);
+    outline: none;
+  }
+  .network-table input:focus, .network-table select:focus { border-color: var(--teal); }
+  .add-row-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--teal-pale);
+    border: 2px dashed var(--teal-light);
+    border-radius: 8px;
+    color: var(--teal);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s;
+  }
+  .add-row-btn:hover { background: #BCD6EA; }
+
+  /* PIPELINE CARDS */
+  .pipeline-entry {
+    background: var(--grey-bg);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1.5px solid var(--grey-border);
+  }
+  .pipeline-entry .entry-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .field-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .field-row label { font-size: 11px; color: var(--grey-mid); font-weight: 600; display: block; margin-bottom: 3px; }
+  .field-col { flex: 1; min-width: 100px; }
+  .field-col input, .field-col select {
+    width: 100%;
+    border: 1.5px solid var(--grey-border);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    background: white;
+    color: var(--text);
+    outline: none;
+  }
+  .field-col input:focus, .field-col select:focus { border-color: var(--teal); }
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .status-notcontacted { background: var(--grey-border); color: var(--text-light); }
+  .status-reached { background: var(--amber-pale); color: #7D6608; }
+  .status-replied { background: var(--teal-pale); color: var(--teal); }
+  .status-meeting { background: var(--green-pale); color: var(--green); }
+  .status-passed { background: var(--coral-pale); color: var(--coral); }
+
+  /* SUMMARY */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .summary-stat {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--teal);
+  }
+  .summary-stat .stat-num { font-size: 28px; font-weight: 800; color: var(--teal); }
+  .summary-stat .stat-label { font-size: 11px; color: var(--grey-mid); margin-top: 4px; font-weight: 500; }
+  .insight-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    border-left: 4px solid var(--amber);
+  }
+  .insight-card h4 { font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .insight-card p { font-size: 12px; color: var(--text-light); line-height: 1.5; }
+
+  /* NAV BUTTONS */
+  .nav-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-next, .btn-prev {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .btn-next { background: var(--teal); color: white; }
+  .btn-prev { background: var(--grey-border); color: var(--text-light); }
+  .btn-next:hover, .btn-prev:hover { opacity: 0.85; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--teal);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(27,79,114,0.4);
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width:768px) {
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .tab { min-width: 72px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<div id="welcomeScreen" style="padding:20px;max-width:700px;margin:auto;background:#fff;">
+<h2>Welcome</h2>
+<p>Please answer these questions before starting.</p>
+<label><b>Your role at this event</b></label><br>
+<select id="userRole" style="width:100%;padding:10px;margin:8px 0;">
+<option>Founder</option><option>Investor</option><option>Student</option><option>Academic / Researcher</option><option>Mentor / Advisor</option><option>Incubator / Accelerator</option><option>Entrepreneur</option><option>Other</option>
+</select><br>
+<label><b>Your pronouns</b></label><br>
+<select id="userPronouns" style="width:100%;padding:10px;margin:8px 0;">
+<option>She / Her</option><option>He / Him</option><option>They / Them</option><option>Prefer to self-describe</option><option>Prefer not to say</option>
+</select>
+<button onclick="document.getElementById('welcomeScreen').style.display='none';" style="width:100%;padding:14px;margin-top:15px;">Start Questionnaire</button>
+</div>
+
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>🗺️ Networking Canvas</h1>
+      <p>Strategic fundraising · BTU Cottbus–Senftenberg</p>
+    </div>
+    <button class="save-btn" onclick="saveProgress()">💾 Save</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 of 4 sections completed</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab(0)" id="tab0">
+    <span class="tab-icon">✅</span>
+    <span>Ready?</span>
+    <span class="tab-check">✓ done</span>
+  </button>
+  <button class="tab" onclick="showTab(1)" id="tab1">
+    <span class="tab-icon">🎯</span>
+    <span>Investors</span>
+    <span class="tab-check">✓ done</span>
+  </button>
+  <button class="tab" onclick="showTab(2)" id="tab2">
+    <span class="tab-icon">🔗</span>
+    <span>Network</span>
+    <span class="tab-check">✓ done</span>
+  </button>
+  <button class="tab" onclick="showTab(3)" id="tab3">
+    <span class="tab-icon">📬</span>
+    <span>Pipeline</span>
+    <span class="tab-check">✓ done</span>
+  </button>
+  <button class="tab" onclick="showTab(4)" id="tab4">
+    <span class="tab-icon">💡</span>
+    <span>Insights</span>
+    <span class="tab-check"></span>
+  </button>
+</div>
+
+<!-- SECTION 0: READINESS -->
+<div class="section active" id="section0">
+  <div class="section-header">
+    <h2>✅ Fundraising Readiness</h2>
+    <p>Before reaching out, check that your foundations are in place. Investors need clarity on what you're raising and why.</p>
+    <div class="research-note">📖 Hor et al. (2021) — structured preparation improves fundraising outcomes</div>
+  </div>
+
+  <div class="card" id="card0-0">
+    <div class="card-label"><span class="num">1</span> Do you have a pitch deck ready?</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_deck','yes')">✅ Yes, it's ready</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_deck','no')">🚧 Not yet</button>
+    </div>
+    <div class="alert alert-coral" id="alert_ready_deck_no">Investors expect a deck before a first call. Prioritise this before outreach — even a 6-slide version is better than none.</div>
+    <div class="alert alert-green" id="alert_ready_deck_yes">Great. Make sure it opens with your problem, not your product.</div>
+  </div>
+
+  <div class="card" id="card0-1">
+    <div class="card-label"><span class="num">2</span> Have you set a clear fundraising goal?</div>
+    <div class="card-sublabel">e.g. "Raise €300K seed round to hire 2 engineers and reach €50K MRR"</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_goal','yes')">✅ Yes, specific amount + use</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_goal','no')">🤔 Vague / not yet</button>
+    </div>
+    <div class="alert alert-coral" id="alert_ready_goal_no">Investors ask "how much and what for" in the first 2 minutes. Have a specific answer before any outreach.</div>
+  </div>
+
+  <div class="card" id="card0-2">
+    <div class="card-label"><span class="num">3</span> How confident are you in your 2-minute verbal pitch?</div>
+    <div class="slider-wrap">
+      <input type="range" class="slider" min="1" max="5" value="3" oninput="updateSlider(this,'pitch_confidence')" id="sl_pitch">
+      <div class="slider-labels"><span>Not at all</span><span>Very confident</span></div>
+      <div class="slider-value" id="val_pitch">3 / 5</div>
+    </div>
+    <div class="alert alert-amber show" id="alert_pitch_low">Research shows investors ask women prevention-focused questions ("what could go wrong?"). Practice reframing those as growth answers. (Kanze et al., 2018)</div>
+  </div>
+
+  <div class="card" id="card0-3">
+    <div class="card-label"><span class="num">4</span> Have you built an initial investor longlist (10+ names)?</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_list','yes')">✅ Yes</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'ready_list','no')">❌ Not yet</button>
+    </div>
+    <div class="alert alert-amber" id="alert_ready_list_no">Use OpenVC, Crunchbase, or NFX Signal to build a list filtered by stage, sector, and geography before this event.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-next" onclick="nextTab(0)">Next: Target Investors →</button>
+  </div>
+</div>
+
+<!-- SECTION 1: INVESTOR TARGETING -->
+<div class="section" id="section1">
+  <div class="section-header">
+    <h2>🎯 Investor Targeting</h2>
+    <p>Not every investor is a fit. Targeting the wrong person wastes time and can damage your reputation in small networks.</p>
+    <div class="research-note">📖 78% of VCs use "pattern matching" — know who you're approaching (Founders Forum, 2025)</div>
+  </div>
+
+  <div class="card" id="card1-0">
+    <div class="card-label"><span class="num">1</span> What stage are you raising for?</div>
+    <div class="chips-wrap">
+      <button class="chip" onclick="toggleChip(this,'stage','pre-seed')">Pre-seed</button>
+      <button class="chip" onclick="toggleChip(this,'stage','seed')">Seed</button>
+      <button class="chip" onclick="toggleChip(this,'stage','series-a')">Series A</button>
+      <button class="chip" onclick="toggleChip(this,'stage','bridge')">Bridge / Convertible</button>
+    </div>
+  </div>
+
+  <div class="card" id="card1-1">
+    <div class="card-label"><span class="num">2</span> Which sectors does your venture sit in?</div>
+    <div class="chips-wrap">
+      <button class="chip" onclick="toggleChip(this,'sector','deeptech')">Deep Tech</button>
+      <button class="chip" onclick="toggleChip(this,'sector','saas')">SaaS / B2B</button>
+      <button class="chip" onclick="toggleChip(this,'sector','consumer')">Consumer</button>
+      <button class="chip" onclick="toggleChip(this,'sector','health')">Health / MedTech</button>
+      <button class="chip" onclick="toggleChip(this,'sector','climate')">Climate / Green</button>
+      <button class="chip" onclick="toggleChip(this,'sector','social')">Social Impact</button>
+      <button class="chip" onclick="toggleChip(this,'sector','fintech')">Fintech</button>
+      <button class="chip" onclick="toggleChip(this,'sector','other')">Other</button>
+    </div>
+  </div>
+
+  <div class="card" id="card1-2">
+    <div class="card-label"><span class="num">3</span> Geography: where are your target investors based?</div>
+    <div class="chips-wrap">
+      <button class="chip" onclick="toggleChip(this,'geo','dach')">DACH</button>
+      <button class="chip" onclick="toggleChip(this,'geo','eu')">EU (broader)</button>
+      <button class="chip" onclick="toggleChip(this,'geo','uk')">UK</button>
+      <button class="chip" onclick="toggleChip(this,'geo','us')">US</button>
+      <button class="chip" onclick="toggleChip(this,'geo','global')">Global / Remote-first</button>
+    </div>
+  </div>
+
+  <div class="card" id="card1-3">
+    <div class="card-label"><span class="num">4</span> Are you intentionally targeting a mix of male and female investors?</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'inv_mix','yes')">✅ Yes, mixed</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'inv_mix','female-only')">👩 Mostly female</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'inv_mix','no')">🤷 Not thought about it</button>
+    </div>
+    <div class="alert alert-coral show" id="alert_inv_mix_warning">⚠️ Research caution: Female founders who raise only from female VCs are twice as likely to struggle with follow-on funding — male investors must eventually be part of your mix. (Snellman & Solal, 2023)</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-prev" onclick="prevTab(1)">← Back</button>
+    <button class="btn-next" onclick="nextTab(1)">Next: Network Map →</button>
+  </div>
+</div>
+
+<!-- SECTION 2: NETWORK MAPPING -->
+<div class="section" id="section2">
+  <div class="section-header">
+    <h2>🔗 Network Mapping</h2>
+    <p>82% of VC deals come through warm introductions. Map who in your network can bridge you to target investors — and assess how credible that bridge is.</p>
+    <div class="research-note">📖 Women are 38% less likely to have direct investor connections — warm intros must be actively built (Founders Forum, 2025)</div>
+  </div>
+
+  <div class="card" id="card2-0">
+    <div class="card-label"><span class="num">1</span> How warm is your current network to investors?</div>
+    <div class="slider-wrap">
+      <input type="range" class="slider" min="1" max="5" value="2" oninput="updateSlider(this,'network_warmth')" id="sl_warmth">
+      <div class="slider-labels"><span>Cold — no connections</span><span>Hot — direct access</span></div>
+      <div class="slider-value" id="val_warmth">2 / 5</div>
+    </div>
+    <div class="alert alert-amber show" id="alert_warmth_cold">A cold network means you need to build bridges first. Focus on connectors (advisors, accelerator alumni, professors) who can introduce you — don't cold-email investors directly. (Scheidgen & Brattström, 2023)</div>
+  </div>
+
+  <div class="card" id="card2-1">
+    <div class="card-label"><span class="num">2</span> Do you have someone who would proactively vouch for you (not just introduce you)?</div>
+    <div class="card-sublabel">Vouching = they send a warm email saying "you should meet this founder" without you asking</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'has_voucher','yes')">✅ Yes</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'has_voucher','no')">❌ No — I have to ask</button>
+    </div>
+    <div class="alert alert-coral" id="alert_has_voucher_no">Men often receive unsolicited vouching; women typically have to ask. This gap is real — but you can close it by explicitly asking a trusted advisor: "Would you be willing to make a warm intro for me?" (Howell & Nanda, 2024)</div>
+  </div>
+
+  <div class="card" id="card2-2">
+    <div class="card-label"><span class="num">3</span> Map your bridge contacts</div>
+    <div class="card-sublabel">List people who could introduce you. Be honest about connection strength.</div>
+    <div style="overflow-x:auto;">
+      <table class="network-table" id="networkTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Relation</th>
+            <th>Can intro to</th>
+            <th>Strength</th>
+          </tr>
+        </thead>
+        <tbody id="networkBody">
+          <tr>
+            <td><input type="text" placeholder="e.g. Prof. Müller" oninput="markAnswered('card2-2')"></td>
+            <td><select oninput="markAnswered('card2-2')">
+              <option value="">Type</option>
+              <option>Advisor</option>
+              <option>Investor</option>
+              <option>Alumni</option>
+              <option>Mentor</option>
+              <option>Professor</option>
+              <option>Colleague</option>
+            </select></td>
+            <td><input type="text" placeholder="Investor / fund name"></td>
+            <td><select>
+              <option>🔥 Strong</option>
+              <option>👍 Medium</option>
+              <option>🌱 Weak</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Name" oninput="markAnswered('card2-2')"></td>
+            <td><select><option value="">Type</option><option>Advisor</option><option>Investor</option><option>Alumni</option><option>Mentor</option><option>Professor</option><option>Colleague</option></select></td>
+            <td><input type="text" placeholder="Investor / fund name"></td>
+            <td><select><option>🔥 Strong</option><option>👍 Medium</option><option>🌱 Weak</option></select></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Name" oninput="markAnswered('card2-2')"></td>
+            <td><select><option value="">Type</option><option>Advisor</option><option>Investor</option><option>Alumni</option><option>Mentor</option><option>Professor</option><option>Colleague</option></select></td>
+            <td><input type="text" placeholder="Investor / fund name"></td>
+            <td><select><option>🔥 Strong</option><option>👍 Medium</option><option>🌱 Weak</option></select></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addNetworkRow()">+ Add another contact</button>
+  </div>
+
+  <div class="card" id="card2-3">
+    <div class="card-label"><span class="num">4</span> Do you have credible signals that would make others want to refer you?</div>
+    <div class="card-sublabel">e.g. traction, revenue, notable customers, awards, prior exits</div>
+    <div class="chips-wrap">
+      <button class="chip" onclick="toggleChip(this,'signals','revenue')">💰 Revenue / MRR</button>
+      <button class="chip" onclick="toggleChip(this,'signals','customers')">🤝 Named customers</button>
+      <button class="chip" onclick="toggleChip(this,'signals','awards')">🏆 Awards / press</button>
+      <button class="chip" onclick="toggleChip(this,'signals','exits')">🚀 Prior exit</button>
+      <button class="chip" onclick="toggleChip(this,'signals','accelerator')">🏫 Accelerator</button>
+      <button class="chip" onclick="toggleChip(this,'signals','none')">🚧 None yet</button>
+    </div>
+    <div class="alert alert-amber show" id="alert_signals_note">Credible signals make others more likely to vouch for you unprompted. If you have none yet, leading with "we're backed by [accelerator]" or "our advisor is [known name]" can serve the same function.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-prev" onclick="prevTab(2)">← Back</button>
+    <button class="btn-next" onclick="nextTab(2)">Next: Outreach Pipeline →</button>
+  </div>
+</div>
+
+<!-- SECTION 3: PIPELINE -->
+<div class="section" id="section3">
+  <div class="section-header">
+    <h2>📬 Outreach Pipeline</h2>
+    <p>Track who you've contacted, how, and what happened. Follow-up is where most founders lose momentum — especially after investor events.</p>
+    <div class="research-note">📖 Women show reduced follow-up after VC exposure — the pipeline tool helps close this gap (Howell & Nanda, 2024)</div>
+  </div>
+
+  <div class="card" id="card3-0">
+    <div class="card-label"><span class="num">1</span> How many investors have you already contacted?</div>
+    <div class="slider-wrap">
+      <input type="range" class="slider" min="0" max="30" value="0" oninput="updateSlider(this,'contacted_count',true)" id="sl_contacted">
+      <div class="slider-labels"><span>0</span><span>30+</span></div>
+      <div class="slider-value" id="val_contacted">0 investors</div>
+    </div>
+  </div>
+
+  <div class="card" id="card3-1">
+    <div class="card-label"><span class="num">2</span> What has been your main outreach method so far?</div>
+    <div class="chips-wrap">
+      <button class="chip" onclick="toggleChip(this,'method','cold-email')">📧 Cold email</button>
+      <button class="chip" onclick="toggleChip(this,'method','warm-intro')">🤝 Warm intro</button>
+      <button class="chip" onclick="toggleChip(this,'method','linkedin')">💼 LinkedIn</button>
+      <button class="chip" onclick="toggleChip(this,'method','events')">🎪 Events / pitches</button>
+      <button class="chip" onclick="toggleChip(this,'method','platform')">🖥️ Platform (OpenVC etc.)</button>
+      <button class="chip" onclick="toggleChip(this,'method','none')">🚧 Haven't started</button>
+    </div>
+    <div class="alert alert-coral show" id="alert_method_cold">⚠️ Cold outreach has very low conversion for early-stage fundraising. Even one warm intro is worth 20 cold emails — focus your energy on activating your bridge contacts first.</div>
+  </div>
+
+  <div class="card" id="card3-2">
+    <div class="card-label"><span class="num">3</span> Track your investor contacts</div>
+    <div class="card-sublabel">Add investors you're pursuing or have met at this event.</div>
+    <div id="pipelineEntries">
+      <div class="pipeline-entry">
+        <div class="entry-header">Investor #1</div>
+        <div class="field-row">
+          <div class="field-col"><label>Name / Fund</label><input type="text" placeholder="e.g. Jana Vogel / XYZ Ventures" oninput="markAnswered('card3-2')"></div>
+          <div class="field-col"><label>Status</label>
+            <select onchange="markAnswered('card3-2')">
+              <option value="notcontacted">Not contacted</option>
+              <option value="reached">Reached out</option>
+              <option value="replied">Replied</option>
+              <option value="meeting">Meeting booked</option>
+              <option value="passed">Passed</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-col"><label>How introduced</label>
+            <select>
+              <option>Warm intro</option>
+              <option>Cold email</option>
+              <option>Event / met here</option>
+              <option>LinkedIn</option>
+              <option>Platform</option>
+            </select>
+          </div>
+          <div class="field-col"><label>Follow-up by</label><input type="date"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-col"><label>Notes / next step</label><input type="text" placeholder="e.g. Send deck by Friday"></div>
+        </div>
+      </div>
+    </div>
+    <button class="add-row-btn" onclick="addPipelineEntry()">+ Add another investor</button>
+  </div>
+
+  <div class="card" id="card3-3">
+    <div class="card-label"><span class="num">4</span> Do you have a follow-up system in place?</div>
+    <div class="card-sublabel">e.g. calendar reminders, CRM, spreadsheet</div>
+    <div class="yesno-wrap">
+      <button class="yesno-btn" onclick="setYesNo(this,'has_followup','yes')">✅ Yes</button>
+      <button class="yesno-btn" onclick="setYesNo(this,'has_followup','no')">❌ No system yet</button>
+    </div>
+    <div class="alert alert-coral" id="alert_has_followup_no">Most investor relationships close on the 5th–7th touch. Without a tracking system you will lose momentum. Even a simple Google Sheet with "next follow-up date" is enough to start.</div>
+    <div class="alert alert-green" id="alert_has_followup_yes">Great. Make sure each entry has a concrete next action and date — not just "waiting to hear back."</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-prev" onclick="prevTab(3)">← Back</button>
+    <button class="btn-next" onclick="nextTab(3)">View My Insights →</button>
+  </div>
+</div>
+
+<!-- SECTION 4: INSIGHTS -->
+<div class="section" id="section4">
+  <div class="section-header">
+    <h2>💡 Your Networking Snapshot</h2>
+    <p>Based on your answers — here's where to focus your energy today.</p>
+  </div>
+
+  <div class="summary-grid" id="summaryGrid">
+    <div class="summary-stat">
+      <div class="stat-num" id="stat-readiness">–</div>
+      <div class="stat-label">Readiness score</div>
+    </div>
+    <div class="summary-stat">
+      <div class="stat-num" id="stat-warmth">–</div>
+      <div class="stat-label">Network warmth</div>
+    </div>
+    <div class="summary-stat">
+      <div class="stat-num" id="stat-bridges">–</div>
+      <div class="stat-label">Bridge contacts</div>
+    </div>
+    <div class="summary-stat">
+      <div class="stat-num" id="stat-pipeline">–</div>
+      <div class="stat-label">Investors tracked</div>
+    </div>
+  </div>
+
+  <div id="insightsContainer"></div>
+
+  <div class="card">
+    <div class="card-label"><span class="num">→</span> Your #1 priority today</div>
+    <div id="priorityText" style="font-size:13px;color:var(--text-light);line-height:1.6;margin-top:4px;">Complete the canvas sections above to unlock your personalised priority.</div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn-next" style="max-width:300px;margin:0 auto;" onclick="exportSummary()">📋 Copy Summary to Clipboard</button>
+  </div>
+  <div style="font-size:11px;color:var(--grey-mid);text-align:center;margin-top:12px;">
+    Brandenburg University of Technology Cottbus–Senftenberg · Gendered Entrepreneurial Networking Project
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let state = {};
+  let completedSections = new Set();
+  let currentTab = 0;
+
+  function showTab(n) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section' + n).classList.add('active');
+    document.getElementById('tab' + n).classList.add('active');
+    currentTab = n;
+    if (n === 4) generateInsights();
+    window.scrollTo(0,0);
+  }
+
+  function nextTab(n) {
+    completedSections.add(n);
+    document.getElementById('tab' + n).classList.add('done');
+    updateProgress();
+    showTab(n + 1);
+  }
+
+  function prevTab(n) {
+    showTab(n - 1);
+  }
+
+  function updateProgress() {
+    const pct = Math.round((completedSections.size / 4) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = completedSections.size + ' of 4 sections completed';
+  }
+
+  function setYesNo(btn, key, val) {
+    state[key] = val;
+    const wrap = btn.parentElement;
+    wrap.querySelectorAll('.yesno-btn').forEach(b => {
+      b.classList.remove('selected-yes','selected-no');
+    });
+    btn.classList.add(val === 'yes' ? 'selected-yes' : 'selected-no');
+    // show relevant alert
+    const yes = document.getElementById('alert_'+key+'_yes');
+    const no = document.getElementById('alert_'+key+'_no');
+    const warn = document.getElementById('alert_'+key+'_warning');
+    if (yes) yes.classList.toggle('show', val === 'yes');
+    if (no) no.classList.toggle('show', val === 'no' || val === 'female-only');
+    if (warn) warn.classList.toggle('show', val !== 'yes');
+    markAnswered(btn.closest('.card').id);
+  }
+
+  function toggleChip(btn, key, val) {
+    if (!state[key]) state[key] = [];
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) {
+      if (!state[key].includes(val)) state[key].push(val);
+    } else {
+      state[key] = state[key].filter(v => v !== val);
+    }
+    markAnswered(btn.closest('.card').id);
+  }
+
+  function updateSlider(el, key, isCount) {
+    state[key] = parseInt(el.value);
+    const valEl = el.parentElement.querySelector('.slider-value');
+    if (valEl) valEl.textContent = isCount ? el.value + ' investors' : el.value + ' / 5';
+    // dynamic alert logic
+    if (key === 'network_warmth') {
+      const alert = document.getElementById('alert_warmth_cold');
+      if (alert) alert.classList.toggle('show', parseInt(el.value) <= 2);
+    }
+    if (key === 'pitch_confidence') {
+      const alert = document.getElementById('alert_pitch_low');
+      if (alert) alert.classList.toggle('show', parseInt(el.value) <= 3);
+    }
+    markAnswered(el.closest('.card').id);
+  }
+
+  function markAnswered(cardId) {
+    const card = document.getElementById(cardId);
+    if (card) card.classList.add('answered');
+  }
+
+  function addNetworkRow() {
+    const tbody = document.getElementById('networkBody');
+    const rowNum = tbody.rows.length + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" placeholder="Name" oninput="markAnswered('card2-2')"></td>
+      <td><select><option value="">Type</option><option>Advisor</option><option>Investor</option><option>Alumni</option><option>Mentor</option><option>Professor</option><option>Colleague</option></select></td>
+      <td><input type="text" placeholder="Investor / fund name"></td>
+      <td><select><option>🔥 Strong</option><option>👍 Medium</option><option>🌱 Weak</option></select></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function addPipelineEntry() {
+    const container = document.getElementById('pipelineEntries');
+    const num = container.children.length + 1;
+    const div = document.createElement('div');
+    div.className = 'pipeline-entry';
+    div.innerHTML = `
+      <div class="entry-header">Investor #${num}</div>
+      <div class="field-row">
+        <div class="field-col"><label>Name / Fund</label><input type="text" placeholder="Name / Fund" oninput="markAnswered('card3-2')"></div>
+        <div class="field-col"><label>Status</label>
+          <select onchange="markAnswered('card3-2')">
+            <option value="notcontacted">Not contacted</option>
+            <option value="reached">Reached out</option>
+            <option value="replied">Replied</option>
+            <option value="meeting">Meeting booked</option>
+            <option value="passed">Passed</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-col"><label>How introduced</label>
+          <select><option>Warm intro</option><option>Cold email</option><option>Event / met here</option><option>LinkedIn</option><option>Platform</option></select>
+        </div>
+        <div class="field-col"><label>Follow-up by</label><input type="date"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-col"><label>Notes / next step</label><input type="text" placeholder="Next action"></div>
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  function generateInsights() {
+    const warmth = state['network_warmth'] || 2;
+    const pitch = state['pitch_confidence'] || 3;
+    const deck = state['ready_deck'];
+    const goal = state['ready_goal'];
+    const voucher = state['has_voucher'];
+    const mix = state['inv_mix'];
+    const followup = state['has_followup'];
+    const contacted = state['contacted_count'] || 0;
+    const bridges = document.getElementById('networkBody') ? document.getElementById('networkBody').querySelectorAll('input[type=text]').length / 2 : 0;
+    const pipeline = document.getElementById('pipelineEntries') ? document.getElementById('pipelineEntries').children.length : 0;
+
+    // Readiness score
+    let readiness = 0;
+    if (deck === 'yes') readiness += 25;
+    if (goal === 'yes') readiness += 25;
+    if (pitch >= 4) readiness += 25;
+    if (state['ready_list'] === 'yes') readiness += 25;
+    document.getElementById('stat-readiness').textContent = readiness + '%';
+    document.getElementById('stat-warmth').textContent = warmth + '/5';
+    document.getElementById('stat-bridges').textContent = document.getElementById('networkBody').rows.length;
+    document.getElementById('stat-pipeline').textContent = document.getElementById('pipelineEntries').children.length;
+
+    const insights = [];
+
+    if (deck !== 'yes') insights.push({ title: '🚨 Prepare your pitch deck first', text: 'No deck = no first meeting. A 6–8 slide deck covering problem, solution, traction, team, and ask is the minimum for any investor conversation.' });
+    if (voucher === 'no') insights.push({ title: '🤝 Find your voucher', text: 'Research shows men are proactively vouched for while women must ask. This is real and solvable: identify 1–2 trusted contacts today and ask them directly: "Would you make a warm intro for me?" (Howell & Nanda, 2024)' });
+    if (warmth <= 2) insights.push({ title: '🌡️ Your network is cold — focus on warming it', text: 'Don\'t cold-pitch investors yet. Instead, invest 2 weeks in activating connectors: accelerator alumni, professors, advisors who already know you. A warm context converts 5–10x better than cold outreach. (Scheidgen & Brattström, 2023)' });
+    if (mix === 'female-only') insights.push({ title: '⚠️ Diversify your investor targets', text: 'Female-only networks can backfire at follow-on stage. Female VCs do not yet control enough assets to fund you through all rounds. You need male investors in your mix too. (Snellman & Solal, 2023)' });
+    if (pitch <= 3) insights.push({ title: '🎤 Practice reframing investor questions', text: 'Investors tend to ask women "prevention" questions ("what could go wrong?"). Prepare to reframe: answer the growth version even if a risk question was asked. E.g. "Great point on risk — and here\'s exactly how we\'re positioned to grow through it." (Kanze et al., 2018)' });
+    if (followup === 'no') insights.push({ title: '📅 Set up your follow-up system today', text: 'Most investor relationships take 5–7 touches. Without a tracking system you will lose every warm lead from this event. Set up a simple sheet with name, last contact, next follow-up date.' });
+    if (insights.length === 0) insights.push({ title: '✅ Strong position — now execute', text: 'Your readiness, network, and pipeline look solid. Your priority now is volume of warm outreach and rigorous follow-up. Aim for 3 new investor touches per week.' });
+
+    const container = document.getElementById('insightsContainer');
+    container.innerHTML = insights.map(i => `
+      <div class="insight-card">
+        <h4>${i.title}</h4>
+        <p>${i.text}</p>
+      </div>
+    `).join('');
+
+    // Priority
+    let priority = 'Keep completing your canvas to unlock your personalised priority.';
+    if (deck !== 'yes') priority = '🎯 Today\'s priority: finish your pitch deck. Everything else waits.';
+    else if (warmth <= 2) priority = '🎯 Today\'s priority: identify 3 bridge contacts at this event and ask for intros.';
+    else if (voucher === 'no') priority = '🎯 Today\'s priority: find 1 person at this event who will vouch for you to an investor.';
+    else if (followup === 'no') priority = '🎯 Today\'s priority: before you leave, set 3 follow-up reminders in your calendar.';
+    else priority = '🎯 Today\'s priority: make 3 warm investor contacts and log them in your pipeline.';
+    document.getElementById('priorityText').textContent = priority;
+  }
+
+  function saveProgress() {
+    showToast('✅ Progress saved!');
+  }
+
+  function exportSummary() {
+    const warmth = state['network_warmth'] || '–';
+    const pitch = state['pitch_confidence'] || '–';
+    const deck = state['ready_deck'] || '–';
+    const goal = state['ready_goal'] || '–';
+    const text = `NETWORKING CANVAS SUMMARY\n========================\nPitch deck ready: ${deck}\nFundraising goal set: ${goal}\nPitch confidence: ${pitch}/5\nNetwork warmth: ${warmth}/5\nHas voucher: ${state['has_voucher'] || '–'}\nInvestor mix: ${state['inv_mix'] || '–'}\nFollow-up system: ${state['has_followup'] || '–'}\n\nGenerated by BTU Cottbus–Senftenberg Networking Canvas`;
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Summary copied!')).catch(() => showToast('Use the print button to save'));
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Init sliders
+  document.querySelectorAll('.slider').forEach(sl => {
+    const key = sl.getAttribute('oninput').match(/'([^']+)'/)[1];
+    const isCount = sl.getAttribute('oninput').includes('true');
+    const valEl = sl.parentElement.querySelector('.slider-value');
+    if (valEl) valEl.textContent = isCount ? sl.value + ' investors' : sl.value + ' / 5';
+  });
+</script>
+</body>
+</html>
+
+<script>
+document.addEventListener('click',e=>{
+ if(e.target.classList.contains('yesno-btn')||e.target.classList.contains('chip')){
+   setTimeout(()=>{
+      let b=document.querySelector('.btn-next');
+      if(b) b.click();
+   },350);
+ }
+});
+</script>
